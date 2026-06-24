@@ -12,6 +12,13 @@ dotenv.config()
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 const app = express()
+
+// Serve frontend static files FIRST (correct MIME types)
+const distPath = path.join(__dirname, '../dist')
+if (existsSync(distPath)) {
+  app.use(express.static(distPath))
+}
+
 app.use(cors())
 app.use(express.json())
 
@@ -305,10 +312,8 @@ app.get('/api/scrims-web/:puuid', async (req, res) => {
   }
 })
 
-// Serve frontend in production
-const distPath = path.join(__dirname, '../dist')
+// SPA fallback: serve index.html for non-API routes
 if (existsSync(distPath)) {
-  app.use(express.static(distPath))
   app.get('{*path}', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(distPath, 'index.html'))

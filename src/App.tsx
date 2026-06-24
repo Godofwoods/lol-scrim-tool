@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
 import type { Scrim } from './types'
 import { getStatus, getScrimsLCU, getAccount, getScrimsWeb, getProgress, type Progress } from './services/api'
+import { generateDemoScrims } from './services/demo-data'
 import History from './pages/History'
 import Stats from './pages/Stats'
 import Report from './pages/Report'
@@ -17,6 +18,7 @@ export default function App() {
   const [accountName, setAccountName] = useState<string | null>(null)
   const [selectedYear, setSelectedYear] = useState<number | undefined>(currentYear)
   const [progress, setProgress] = useState<Progress | null>(null)
+  const [isDemo, setIsDemo] = useState(false)
 
   const [riotId, setRiotId] = useState('')
   const [mode, setMode] = useState<'lcu' | 'web'>('lcu')
@@ -28,11 +30,19 @@ export default function App() {
     }).catch(() => setLcuConnected(false))
   }, [])
 
+  const handleDemo = () => {
+    setScrims(generateDemoScrims(24))
+    setAccountName('FIS Godofwoods#AYA')
+    setIsDemo(true)
+    setError(null)
+  }
+
   const handleLCUSearch = useCallback(async () => {
     setLoading(true)
     setError(null)
     setScrims([])
     setAccountName(null)
+    setIsDemo(false)
     setProgress(null)
 
     const pollInterval = setInterval(async () => {
@@ -71,6 +81,7 @@ export default function App() {
     setLoading(true)
     setError(null)
     setScrims([])
+    setIsDemo(false)
 
     try {
       const acc = await getAccount(gameName.trim(), tagLine.trim())
@@ -97,7 +108,10 @@ export default function App() {
     <div className="app">
       <header className="header">
         <h1 className="logo">LoL Scrim Tool</h1>
-        {accountName && <span className="account-tag">{accountName}</span>}
+        <div className="header-right">
+          {isDemo && <span className="demo-badge">DEMO</span>}
+          {accountName && <span className="account-tag">{accountName}</span>}
+        </div>
       </header>
 
       <div className="mode-bar">
@@ -186,8 +200,8 @@ export default function App() {
       {scrims.length > 0 && (
         <>
           <div className="results-info">
-            <span>{scrims.length} scrims trouvés{selectedYear ? ` en ${selectedYear}` : ''}</span>
-            <span className="hint">Ouvre ton historique dans le client LoL et scroll pour trouver plus de scrims anciens</span>
+            <span>{scrims.length} scrims trouvés{selectedYear && !isDemo ? ` en ${selectedYear}` : ''}</span>
+            {!isDemo && <span className="hint">Ouvre ton historique dans le client LoL et scroll pour trouver plus de scrims anciens</span>}
           </div>
           <nav className="nav">
             <NavLink to="/" end>Historique</NavLink>
@@ -205,23 +219,18 @@ export default function App() {
 
       {!loading && scrims.length === 0 && !error && (
         <div className="empty">
-          {mode === 'lcu' ? (
-            <>
-              <p>Assure-toi que ton client League of Legends est lancé.</p>
-              <p className="hint">
-                Clique sur "Analyser mes scrims" pour scanner ton historique (customs incluses).
-              </p>
-              <div className="tip">
-                <strong>Astuce :</strong> Pour trouver plus de scrims anciens, ouvre ton <strong>Profil &gt; Historique</strong> dans le client LoL et <strong>scroll vers le bas</strong> pour charger plus de parties, puis relance l'analyse. Les scrims trouvés sont sauvegardés en cache local.
-              </div>
-            </>
-          ) : (
-            <>
-              <p>Entre un Riot ID pour rechercher les scrims récents.</p>
-              <p className="hint">
-                Note : l'API web ne peut pas voir les parties customs. Utilise le mode "Client LoL" si possible.
-              </p>
-            </>
+          <div className="hero">
+            <h2>Analyse tes scrims League of Legends</h2>
+            <p>Connecte-toi avec ton client LoL ou ton Riot ID pour visualiser tes statistiques de scrims.</p>
+            <p className="hint">Un scrim est détecté quand au moins 3 joueurs d'une équipe ont un pseudo commençant par "FIS".</p>
+            <button className="btn-demo" onClick={handleDemo}>
+              Voir la démo
+            </button>
+          </div>
+          {mode === 'lcu' && (
+            <div className="tip">
+              <strong>Astuce :</strong> Pour trouver plus de scrims anciens, ouvre ton <strong>Profil &gt; Historique</strong> dans le client LoL et <strong>scroll vers le bas</strong> pour charger plus de parties, puis relance l'analyse. Les scrims trouvés sont sauvegardés en cache local.
+            </div>
           )}
         </div>
       )}

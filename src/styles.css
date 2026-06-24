@@ -31,9 +31,26 @@ body {
   letter-spacing: -0.5px;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .account-tag {
   font-size: 14px;
   color: #6b7280;
+}
+
+.demo-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c89b3c;
+  background: #1e1a10;
+  border: 1px solid #c89b3c;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
 }
 
 /* Mode selector */
@@ -203,6 +220,41 @@ body {
 
 .tip strong {
   color: #c89b3c;
+}
+
+/* Hero / Landing */
+.hero {
+  text-align: center;
+  padding: 40px 20px 30px;
+}
+
+.hero h2 {
+  font-size: 22px;
+  color: #c89b3c;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.btn-demo {
+  margin-top: 20px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  border: 2px solid #c89b3c;
+  background: transparent;
+  color: #c89b3c;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-demo:hover {
+  background: #c89b3c;
+  color: #0a0e14;
 }
 
 /* Navigation */

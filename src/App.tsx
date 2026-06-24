@@ -3,6 +3,7 @@ import { Routes, Route, NavLink } from 'react-router-dom'
 import type { Scrim } from './types'
 import { getStatus, getScrimsLCU, getAccount, getScrimsWeb, getProgress, type Progress } from './services/api'
 import { generateDemoScrims } from './services/demo-data'
+import { useLang, LangSwitch } from './services/LangContext'
 import History from './pages/History'
 import Stats from './pages/Stats'
 import Report from './pages/Report'
@@ -11,6 +12,7 @@ const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
 export default function App() {
+  const { t } = useLang()
   const [scrims, setScrims] = useState<Scrim[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -46,10 +48,7 @@ export default function App() {
     setProgress(null)
 
     const pollInterval = setInterval(async () => {
-      try {
-        const p = await getProgress()
-        setProgress(p)
-      } catch { }
+      try { setProgress(await getProgress()) } catch { }
     }, 500)
 
     try {
@@ -57,11 +56,13 @@ export default function App() {
       setAccountName(`${result.summoner.gameName}#${result.summoner.tagLine}`)
       setScrims(result.scrims)
       if (result.scrims.length === 0) {
-        setError(`Aucun scrim trouvé${selectedYear ? ` en ${selectedYear}` : ''}. Vérifie que tu as joué des customs avec au moins 3 joueurs "FIS".`)
+        setError(selectedYear
+          ? t('error.noScrimYear', { year: selectedYear })
+          : t('error.noScrimGeneric'))
       }
     } catch (err: any) {
       setError(err.message)
-      if (err.message.includes('non détecté')) {
+      if (err.message.includes('non détecté') || err.message.includes('not detected')) {
         setLcuConnected(false)
       }
     } finally {
@@ -69,12 +70,12 @@ export default function App() {
       setLoading(false)
       setProgress(null)
     }
-  }, [selectedYear])
+  }, [selectedYear, t])
 
   const handleWebSearch = useCallback(async () => {
     const parts = riotId.split('#')
     if (parts.length !== 2) {
-      setError('Format attendu : GameName#TAG (ex: FISPlayer#EUW)')
+      setError(t('error.format'))
       return
     }
     const [gameName, tagLine] = parts
@@ -88,15 +89,13 @@ export default function App() {
       setAccountName(`${acc.gameName}#${acc.tagLine}`)
       const results = await getScrimsWeb(acc.puuid, 50)
       setScrims(results)
-      if (results.length === 0) {
-        setError('Aucun scrim trouvé via l\'API web (les parties customs ne sont pas visibles via cette méthode).')
-      }
+      if (results.length === 0) setError(t('error.webNoCustoms'))
     } catch (err: any) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
-  }, [riotId])
+  }, [riotId, t])
 
   const refreshStatus = async () => {
     const s = await getStatus()
@@ -109,62 +108,41 @@ export default function App() {
       <header className="header">
         <h1 className="logo">LoL Scrim Tool</h1>
         <div className="header-right">
-          {isDemo && <span className="demo-badge">DEMO</span>}
+          <LangSwitch />
+          {isDemo && <span className="demo-badge">{t('demo')}</span>}
           {accountName && <span className="account-tag">{accountName}</span>}
         </div>
       </header>
 
       <div className="mode-bar">
-        <button
-          className={`mode-btn ${mode === 'lcu' ? 'active' : ''}`}
-          onClick={() => { setMode('lcu'); refreshStatus() }}
-        >
-          Client LoL (customs)
+        <button className={`mode-btn ${mode === 'lcu' ? 'active' : ''}`} onClick={() => { setMode('lcu'); refreshStatus() }}>
+          {t('mode.lcu')}
         </button>
-        <button
-          className={`mode-btn ${mode === 'web' ? 'active' : ''}`}
-          onClick={() => setMode('web')}
-        >
-          API Web (fallback)
+        <button className={`mode-btn ${mode === 'web' ? 'active' : ''}`} onClick={() => setMode('web')}>
+          {t('mode.web')}
         </button>
         <span className={`status-dot ${lcuConnected ? 'connected' : ''}`} />
-        <span className="status-text">
-          {lcuConnected ? 'Client LoL connecté' : 'Client LoL non détecté'}
-        </span>
+        <span className="status-text">{lcuConnected ? t('status.connected') : t('status.disconnected')}</span>
       </div>
 
       {mode === 'lcu' && (
         <div className="search-bar">
-          <span className="search-info">
-            Récupère l'historique depuis ton client LoL (customs incluses)
-          </span>
-          <select
-            className="year-select"
-            value={selectedYear ?? ''}
-            onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : undefined)}
-          >
-            <option value="">Toutes les années</option>
-            {yearOptions.map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
+          <span className="search-info">{t('search.info')}</span>
+          <select className="year-select" value={selectedYear ?? ''} onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : undefined)}>
+            <option value="">{t('search.allYears')}</option>
+            {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
           <button onClick={handleLCUSearch} disabled={loading}>
-            {loading ? 'Analyse...' : 'Analyser mes scrims'}
+            {loading ? t('search.analyzing') : t('search.analyze')}
           </button>
         </div>
       )}
 
       {mode === 'web' && (
         <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Riot ID (ex: FISPlayer#EUW)"
-            value={riotId}
-            onChange={(e) => setRiotId(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !loading && handleWebSearch()}
-          />
+          <input type="text" placeholder={t('search.riotId.placeholder')} value={riotId} onChange={(e) => setRiotId(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !loading && handleWebSearch()} />
           <button onClick={handleWebSearch} disabled={loading || !riotId.trim()}>
-            {loading ? 'Recherche...' : 'Chercher'}
+            {loading ? t('search.searching') : t('search.search')}
           </button>
         </div>
       )}
@@ -174,17 +152,15 @@ export default function App() {
         <div className="progress-container">
           {progress && progress.phase === 'scanning' && (
             <>
-              <div className="progress-text">
-                Scan de l'historique... {progress.scanned} parties analysées, {progress.customsFound} customs trouvées
-              </div>
+              <div className="progress-text">{t('progress.scanning', { scanned: progress.scanned, customs: progress.customsFound })}</div>
               <div className="progress-bar"><div className="progress-bar-fill indeterminate" /></div>
             </>
           )}
           {progress && progress.phase === 'fetching' && progress.toFetch > 0 && (
             <>
               <div className="progress-text">
-                Récupération des détails... {progress.fetched}/{progress.toFetch} parties
-                {progress.cached > 0 && ` (${progress.cached} en cache)`}
+                {t('progress.fetching', { fetched: progress.fetched, total: progress.toFetch })}
+                {progress.cached > 0 && ` (${t('progress.cached', { n: progress.cached })})`}
               </div>
               <div className="progress-bar">
                 <div className="progress-bar-fill" style={{ width: `${Math.round((progress.fetched / progress.toFetch) * 100)}%` }} />
@@ -192,7 +168,7 @@ export default function App() {
             </>
           )}
           {(!progress || progress.phase === 'idle') && (
-            <div className="progress-text">Connexion au client LoL...</div>
+            <div className="progress-text">{t('progress.connecting')}</div>
           )}
         </div>
       )}
@@ -200,15 +176,14 @@ export default function App() {
       {scrims.length > 0 && (
         <>
           <div className="results-info">
-            <span>{scrims.length} scrims trouvés{selectedYear && !isDemo ? ` en ${selectedYear}` : ''}</span>
-            {!isDemo && <span className="hint">Ouvre ton historique dans le client LoL et scroll pour trouver plus de scrims anciens</span>}
+            <span>{isDemo || !selectedYear ? t('results.found', { n: scrims.length }) : t('results.foundYear', { n: scrims.length, year: selectedYear })}</span>
+            {!isDemo && <span className="hint">{t('results.hint')}</span>}
           </div>
           <nav className="nav">
-            <NavLink to="/" end>Historique</NavLink>
-            <NavLink to="/stats">Statistiques</NavLink>
-            <NavLink to="/report">Bilan</NavLink>
+            <NavLink to="/" end>{t('nav.history')}</NavLink>
+            <NavLink to="/stats">{t('nav.stats')}</NavLink>
+            <NavLink to="/report">{t('nav.report')}</NavLink>
           </nav>
-
           <Routes>
             <Route path="/" element={<History scrims={scrims} />} />
             <Route path="/stats" element={<Stats scrims={scrims} />} />
@@ -220,16 +195,15 @@ export default function App() {
       {!loading && scrims.length === 0 && !error && (
         <div className="empty">
           <div className="hero">
-            <h2>Analyse tes scrims League of Legends</h2>
-            <p>Connecte-toi avec ton client LoL ou ton Riot ID pour visualiser tes statistiques de scrims.</p>
-            <p className="hint">Un scrim est détecté quand au moins 3 joueurs d'une équipe ont un pseudo commençant par "FIS".</p>
-            <button className="btn-demo" onClick={handleDemo}>
-              Voir la démo
-            </button>
+            <h2>{t('hero.title')}</h2>
+            <p>{t('hero.desc')}</p>
+            <p className="hint">{t('hero.hint')}</p>
+            <button className="btn-demo" onClick={handleDemo}>{t('hero.demo')}</button>
           </div>
           {mode === 'lcu' && (
             <div className="tip">
-              <strong>Astuce :</strong> Pour trouver plus de scrims anciens, ouvre ton <strong>Profil &gt; Historique</strong> dans le client LoL et <strong>scroll vers le bas</strong> pour charger plus de parties, puis relance l'analyse. Les scrims trouvés sont sauvegardés en cache local.
+              <strong>{t('tip.label')}</strong>{' '}
+              <span dangerouslySetInnerHTML={{ __html: t('tip.lcu') }} />
             </div>
           )}
         </div>

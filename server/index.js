@@ -309,7 +309,7 @@ app.get('/api/scrims-web/:puuid', async (req, res) => {
 const distPath = path.join(__dirname, '../dist')
 if (existsSync(distPath)) {
   app.use(express.static(distPath))
-  app.get('*', (req, res) => {
+  app.get('{*path}', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(distPath, 'index.html'))
     }

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npx vite *)",
+      "Bash(node -e ' *)",
+      "Bash(node server/index.js)",
+      "Bash(curl -s http://localhost:3001/api/config)",
+      "Bash(curl -s http://localhost:3001/api/status)",
+      "Bash(kill %1)"
+    ]
+  }
+}

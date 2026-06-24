@@ -1,0 +1,508 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0e14;
+  color: #c5cdd9;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.logo {
+  font-size: 24px;
+  color: #c89b3c;
+  letter-spacing: -0.5px;
+}
+
+.account-tag {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Mode selector */
+.mode-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mode-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #1e2328;
+  background: #1a1f26;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.mode-btn.active {
+  border-color: #c89b3c;
+  color: #c89b3c;
+  background: #1e1a10;
+}
+
+.mode-btn:hover { color: #c5cdd9; }
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #dc3545;
+  margin-left: 12px;
+}
+
+.status-dot.connected { background: #28a745; }
+
+.status-text {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Search */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.search-info {
+  flex: 1;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.year-select {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #1e2328;
+  background: #1a1f26;
+  color: #c5cdd9;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.year-select:focus { border-color: #c89b3c; }
+
+.search-bar input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #1e2328;
+  background: #1a1f26;
+  color: #c5cdd9;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-bar input:focus {
+  border-color: #c89b3c;
+}
+
+.search-bar button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  background: #c89b3c;
+  color: #0a0e14;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.search-bar button:hover { background: #e0b44a; }
+.search-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Progress */
+.progress-container {
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #1a1f26;
+  border: 1px solid #1e2328;
+  border-radius: 8px;
+}
+
+.progress-text {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #1e2328;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #c89b3c;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-bar-fill.indeterminate {
+  width: 30%;
+  animation: indeterminate 1.5s ease-in-out infinite;
+}
+
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+/* Results info */
+.results-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #1a1f26;
+  border: 1px solid #1e2328;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.results-info span:first-child {
+  color: #c89b3c;
+  font-weight: 600;
+}
+
+.tip {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #1e1a10;
+  border: 1px solid #c89b3c33;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.tip strong {
+  color: #c89b3c;
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #1e2328;
+  padding-bottom: 0;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #6b7280;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav a:hover { color: #c5cdd9; }
+.nav a.active {
+  color: #c89b3c;
+  border-bottom-color: #c89b3c;
+}
+
+/* Messages */
+.error {
+  padding: 12px;
+  background: #3d1a1a;
+  border: 1px solid #ff4444;
+  border-radius: 6px;
+  color: #ff6b6b;
+  margin-bottom: 16px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.hint {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* Stats summary cards */
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #1a1f26;
+  border: 1px solid #1e2328;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-card .value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #c89b3c;
+}
+
+.stat-card .label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.win-color { color: #28a745 !important; }
+.loss-color { color: #dc3545 !important; }
+
+/* Scrim cards (History) */
+.scrim-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scrim-card {
+  background: #1a1f26;
+  border: 1px solid #1e2328;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.scrim-card.win { border-left: 3px solid #28a745; }
+.scrim-card.loss { border-left: 3px solid #dc3545; }
+
+.scrim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.scrim-result { font-weight: 700; font-size: 14px; }
+.scrim-result.win { color: #28a745; }
+.scrim-result.loss { color: #dc3545; }
+
+.scrim-meta { font-size: 12px; color: #6b7280; }
+
+.scrim-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.team-section h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.participant-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.participant-row .position {
+  color: #6b7280;
+  min-width: 30px;
+  font-size: 11px;
+}
+
+.participant-row .champion {
+  color: #c89b3c;
+  min-width: 90px;
+}
+
+.participant-row .name { min-width: 110px; }
+.participant-row .kda { color: #9ca3af; min-width: 70px; }
+.participant-row .cs { color: #6b7280; font-size: 12px; }
+
+/* Section titles */
+.section-title {
+  font-size: 18px;
+  color: #c89b3c;
+  margin: 24px 0 16px;
+}
+
+/* Tables */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.stats-table th {
+  text-align: left;
+  padding: 10px 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid #1e2328;
+  white-space: nowrap;
+}
+
+.stats-table td {
+  padding: 8px;
+  border-bottom: 1px solid #12161c;
+}
+
+.stats-table tbody tr:hover {
+  background: #12161c;
+}
+
+.player-name {
+  color: #e0b44a;
+  font-weight: 500;
+}
+
+.champ-list {
+  font-size: 11px;
+  color: #9ca3af;
+  max-width: 200px;
+}
+
+/* Export / Report */
+.export-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.btn-export {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #c89b3c;
+  background: transparent;
+  color: #c89b3c;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-export:hover {
+  background: #c89b3c;
+  color: #0a0e14;
+}
+
+.report {
+  background: #0f1319;
+  border: 1px solid #1e2328;
+  border-radius: 8px;
+  padding: 32px;
+}
+
+.report-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.report-header h2 {
+  font-size: 22px;
+  color: #c89b3c;
+}
+
+.report-subtitle {
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.report-date {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.report-overview {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 28px;
+  padding: 20px;
+  background: #1a1f26;
+  border-radius: 8px;
+}
+
+.report-stat {
+  text-align: center;
+}
+
+.report-stat-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: #c89b3c;
+}
+
+.report-stat-label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.report-section-title {
+  font-size: 16px;
+  color: #c89b3c;
+  margin-bottom: 12px;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.report-table th {
+  text-align: left;
+  padding: 8px 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid #1e2328;
+}
+
+.report-table td {
+  padding: 6px;
+  border-bottom: 1px solid #12161c;
+}

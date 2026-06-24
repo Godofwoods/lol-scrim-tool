@@ -449,10 +449,38 @@ body {
   font-weight: 500;
 }
 
-.champ-list {
-  font-size: 11px;
+.champ-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e0b44a;
+  font-weight: 500;
+}
+
+.champ-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+}
+
+.champ-icon-sm {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.top-champs {
+  display: flex;
+  gap: 6px;
+}
+
+.top-champ {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
   color: #9ca3af;
-  max-width: 200px;
 }
 
 /* Export / Report */

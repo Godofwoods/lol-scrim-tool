@@ -1,4 +1,5 @@
 import type { Scrim } from '../types'
+import { championIconUrl } from '../services/ddragon'
 
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -56,6 +57,7 @@ export default function History({ scrims }: { scrims: Scrim[] }) {
                 {scrim.ally.map((p, i) => (
                   <div key={i} className="participant-row">
                     <span className="position">{positionLabel(p.teamPosition)}</span>
+                    <img className="champ-icon-sm" src={championIconUrl(p.championName)} alt={p.championName} />
                     <span className="champion">{p.championName}</span>
                     <span className="name">{p.riotIdGameName}</span>
                     <span className="kda">{p.kills}/{p.deaths}/{p.assists}</span>
@@ -68,6 +70,7 @@ export default function History({ scrims }: { scrims: Scrim[] }) {
                 {scrim.enemy.map((p, i) => (
                   <div key={i} className="participant-row">
                     <span className="position">{positionLabel(p.teamPosition)}</span>
+                    <img className="champ-icon-sm" src={championIconUrl(p.championName)} alt={p.championName} />
                     <span className="champion">{p.championName}</span>
                     <span className="name">{p.riotIdGameName}</span>
                     <span className="kda">{p.kills}/{p.deaths}/{p.assists}</span>

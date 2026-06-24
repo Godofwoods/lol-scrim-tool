@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { Scrim, Participant } from '../types'
+import { championIconUrl } from '../services/ddragon'
 
 interface PlayerStats {
   name: string
@@ -84,12 +85,18 @@ function kdaStr(k: number, d: number, a: number) {
   return d > 0 ? ((k + a) / d).toFixed(2) : 'Perfect'
 }
 
-function topChampions(champs: Record<string, number>, n = 3): string {
-  return Object.entries(champs)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, n)
-    .map(([name, count]) => `${name} (${count})`)
-    .join(', ')
+function TopChampions({ champs, n = 3 }: { champs: Record<string, number>; n?: number }) {
+  const top = Object.entries(champs).sort((a, b) => b[1] - a[1]).slice(0, n)
+  return (
+    <div className="top-champs">
+      {top.map(([name, count]) => (
+        <span key={name} className="top-champ" title={`${name} (${count})`}>
+          <img className="champ-icon-sm" src={championIconUrl(name)} alt={name} />
+          {count}
+        </span>
+      ))}
+    </div>
+  )
 }
 
 function positionLabel(pos: string): string {
@@ -176,7 +183,7 @@ export default function Stats({ scrims }: { scrims: Scrim[] }) {
                 <td>{(p.damage / p.games / 1000).toFixed(1)}k</td>
                 <td>{(p.gold / p.games / 1000).toFixed(1)}k</td>
                 <td>{Math.round((p.kp / p.games) * 100)}%</td>
-                <td className="champ-list">{topChampions(p.champions)}</td>
+                <td><TopChampions champs={p.champions} /></td>
               </tr>
             ))}
           </tbody>
@@ -200,7 +207,10 @@ export default function Stats({ scrims }: { scrims: Scrim[] }) {
           <tbody>
             {champions.map(c => (
               <tr key={c.name}>
-                <td className="player-name">{c.name}</td>
+                <td className="champ-cell">
+                  <img className="champ-icon" src={championIconUrl(c.name)} alt={c.name} />
+                  {c.name}
+                </td>
                 <td>{c.games}</td>
                 <td className={c.wins / c.games >= 0.5 ? 'win-color' : 'loss-color'}>
                   {Math.round((c.wins / c.games) * 100)}%
